@@ -11,7 +11,7 @@ import tokenRootAbi from '../abi/TokenRoot.abi.json';
 import tokenWalletAbi from '../abi/TokenWallet.abi.json';
 
 import ConnectWallet from '../components/ConnectWallet'
-import SaleForm from '../components/SaleForm';
+import StakingForm from '../components/StakingForm';
 
 type Props = {
   venomConnect: VenomConnect | undefined;
@@ -20,7 +20,7 @@ type Props = {
 function Main({ venomConnect }: Props) {
 
   const [venomProvider, setVenomProvider] = useState<any>();
-  const [address, setAddress] = useState();
+  const [address, setAddress] = useState<any>();
 
   // We will store token balance from contract
   const [balance, setBalance] = useState<string | undefined>();
@@ -61,7 +61,7 @@ function Main({ venomConnect }: Props) {
     const standalone: ProviderRpcClient | undefined = await venomConnect?.getStandalone('venomwallet');
     if (standalone) {
       if (!tokenWalletAddress) {
-        await setupTokenWalletAddress(standalone, wallet);
+        //await setupTokenWalletAddress(standalone, wallet);
       }
       if (!venomProvider || !tokenWalletAddress) return;
       try {
@@ -136,20 +136,26 @@ function Main({ venomConnect }: Props) {
 
   return (
     <div className="box">
-      {address && (
         <header>
-          <p>{address}</p>
+          <a className='nav-menu'>HOME</a>
+          <a className='nav-menu'>VPUMPY STAKING</a>
+          <a className='nav-menu'>NFT STAKING</a>
+          <a className='nav-menu'>LEADERBOARD</a>
+          {!address &&
+          <a className="logout" onClick={onConnect}>
+            CONNECT
+          </a>}
+          {address &&
           <a className="logout" onClick={onDisconnect}>
-            <img src={LogOutImg} alt="Logout" />
-          </a>
+            {address.slice(0,5)+"..."+address.slice(-4)}
+          </a>}
         </header>
-      )}
 
       <img className="decor" src={BackImg} alt="back" />
       <div className="card">
         <div className="card__wrap">
           {address ? (
-            <SaleForm
+            <StakingForm
               address={address}
               balance={balance}
               venomConnect={venomConnect}
