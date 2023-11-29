@@ -16,7 +16,7 @@ function ConnectWallet({ venomConnect }: Props) {
         <h1>My Venom Crowdsale</h1>
         <p>Connect Wallet to continue</p>
         <a className="btn" onClick={login}>
-          Connect walletsf
+          Connect wallet
         </a>
       </>
     </div>
