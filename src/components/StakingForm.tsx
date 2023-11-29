@@ -20,7 +20,7 @@ type Props = {
   provider: ProviderRpcClient | undefined;
 };
 
-function StakingForm({ balance, venomConnect, address, provider, getBalance }: Props) {
+function StakingForm({ venomConnect, address, provider }: Props) {
   const [tokenAmount, setTokenAmount] = useState<number | undefined>();
   const [stakingContract, setStakingContract] = useState<any>();
   const [tokenRootContract, setTokenRootContract] = useState<any>();
@@ -28,6 +28,8 @@ function StakingForm({ balance, venomConnect, address, provider, getBalance }: P
   const [stakedAmount, setStakedAmount] = useState(0);
   const [claimedAmount, setClaimedAmount] = useState(0);
   const [stakingAddress, setStakingAddress] = useState("0:92abc446e6bc136aab26aa438268d7795dfd5d037447473254bc2092ebb06c1b");
+  const [isStaking, setIsStaking] = useState(false);
+  const [isClaiming, setIsClaiming] = useState(false);
   const onChangeAmount = (e: string) => {
     if (e === "") setTokenAmount(undefined);
     setTokenAmount(Number(e));
@@ -93,7 +95,7 @@ function StakingForm({ balance, venomConnect, address, provider, getBalance }: P
   const claimTokens = async () => {
     if(!stakingContract || !address) return;
     try {
-      // and just call buyTokens method according to smart contract
+      setIsClaiming(true);
       const result = await stakingContract.methods
         .claim({})
         .send({
@@ -103,9 +105,11 @@ function StakingForm({ balance, venomConnect, address, provider, getBalance }: P
         });
       if (result?.id?.lt && result?.endStatus === "active") {
         alert("Successfully claimed token!");
+        setIsClaiming(false);
         await getStakingInfo();
       }
     } catch (e) {
+      setIsClaiming(false);
       console.error(e);
     }
   }
@@ -114,6 +118,7 @@ function StakingForm({ balance, venomConnect, address, provider, getBalance }: P
     if (!venomConnect || !address || !tokenAmount || !provider || !tokenWalletContract) return;
     const amount = new BigNumber(tokenAmount).multipliedBy(10 ** 9).toString(); // Contract"s rate parameter is 1 venom = 10 tokens
     try {
+      setIsStaking(true);
       const result = await tokenWalletContract.methods
         .transfer({
           amount,
@@ -130,9 +135,11 @@ function StakingForm({ balance, venomConnect, address, provider, getBalance }: P
         });
       if (result?.id?.lt && result?.endStatus === "active") {
         alert("Successfully staked token!");
+        setIsStaking(false);
         await getStakingInfo();
       }
     } catch (e) {
+      setIsStaking(false);
       console.error(e);
     }
   };
@@ -164,10 +171,10 @@ function StakingForm({ balance, venomConnect, address, provider, getBalance }: P
         />
       </div>
       <div className="card__amount">
-        <a className={!tokenAmount ? "btn" : "btn"} onClick={claimTokens}>
+        <a className={isClaiming ? "btn disabled" : "btn"} onClick={claimTokens}>
           Claim
         </a>
-        <a className={!tokenAmount ? "btn disabled" : "btn"} onClick={stakeTokens}>
+        <a className={(!tokenAmount || isStaking ) ? "btn disabled" : "btn"} onClick={stakeTokens}>
           Stake
         </a>
       </div>
