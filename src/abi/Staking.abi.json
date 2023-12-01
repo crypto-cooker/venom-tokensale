@@ -42,6 +42,14 @@
 			]
 		},
 		{
+			"name": "unstake",
+			"inputs": [
+				{"name":"amount","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "getAPY",
 			"inputs": [
 				{"name":"staker","type":"address"}
@@ -117,6 +125,16 @@
 		},
 		{
 			"name": "TokenClaim",
+			"inputs": [
+				{"name":"staker","type":"address"},
+				{"name":"amount","type":"uint128"},
+				{"name":"time","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "TokenUnstake",
 			"inputs": [
 				{"name":"staker","type":"address"},
 				{"name":"amount","type":"uint128"},

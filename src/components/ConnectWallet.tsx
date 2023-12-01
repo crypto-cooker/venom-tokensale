@@ -13,7 +13,7 @@ function ConnectWallet({ venomConnect }: Props) {
   return (
     <div>
       <>
-        <h1>My Venom Crowdsale</h1>
+        <h1>VenomPumpy Token & NFT Staking</h1>
         <p>Connect Wallet to continue</p>
         <a className="btn" onClick={login}>
           Connect wallet

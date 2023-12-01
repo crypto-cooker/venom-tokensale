@@ -25,11 +25,14 @@ function StakingForm({ venomConnect, address, provider }: Props) {
   const [stakingContract, setStakingContract] = useState<any>();
   const [tokenRootContract, setTokenRootContract] = useState<any>();
   const [tokenWalletContract, setTokenWalletContract] = useState<any>();
+  const [tvl, setTvl] = useState(0);
+  const [tokenBalance, setTokenBalance] = useState(0);
   const [stakedAmount, setStakedAmount] = useState(0);
   const [claimedAmount, setClaimedAmount] = useState(0);
-  const [stakingAddress, setStakingAddress] = useState("0:92abc446e6bc136aab26aa438268d7795dfd5d037447473254bc2092ebb06c1b");
+  const [stakingAddress, setStakingAddress] = useState("0:0372833938b0d03d53428563e6f970cc5cc808323a5ba93ec9a0ebd8d4690b47");
   const [isStaking, setIsStaking] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
+  const [isUnstaking, setIsUnstaking] = useState(false);
   const onChangeAmount = (e: string) => {
     if (e === "") setTokenAmount(undefined);
     setTokenAmount(Number(e));
@@ -53,7 +56,9 @@ function StakingForm({ venomConnect, address, provider }: Props) {
         try {
           const tokenWalletAddress = (await tokenRootContract.methods.walletOf({answerId: 0, walletOwner: address}).call()).value0;
           const tokenWalletInstance = new provider.Contract(tokenWalletAbi, tokenWalletAddress);
+          const { value0 } = await tokenWalletInstance.methods.balance({answerId: 0} as never).call();
           setTokenWalletContract(tokenWalletInstance);
+          setTokenBalance(parseFloat((value0/(10**9)).toFixed(2)));
         } catch (error) {
           console.log(error)
         }
@@ -67,8 +72,12 @@ function StakingForm({ venomConnect, address, provider }: Props) {
       .getStakedInfo({staker: address})
       .call({});
       setStakedAmount(parseFloat(value0.amount)/(10**9));
-      setClaimedAmount(parseFloat(value0.claimedAmount)/(10**9))
-      console.log(value0, "RES");
+      setClaimedAmount(parseFloat(value0.claimedAmount)/(10**9));
+      const { totalStakedAmount } = await stakingContract.methods
+      .totalStakedAmount({})
+      .call({});
+      setTvl(parseFloat(totalStakedAmount)/(10**9));
+      console.log(totalStakedAmount, "RES");
     } catch (error) {
       console.log(error, "GREAT")
     }
@@ -143,39 +152,86 @@ function StakingForm({ venomConnect, address, provider }: Props) {
       console.error(e);
     }
   };
+  const unstakeTokens = async () => {
+    if (!venomConnect || !address || !tokenAmount || !provider || !tokenWalletContract) return;
+    const amount = new BigNumber(tokenAmount).multipliedBy(10 ** 9).toString(); // Contract"s rate parameter is 1 venom = 10 tokens
+    try {
+      setIsUnstaking(true);
+      const result = await stakingContract.methods
+        .unstake({amount:amount})
+        .send({
+          from: new Address(address),
+          amount: new BigNumber(0.5).multipliedBy(10 ** 9).toString(),
+          bounce: true,
+        });
+      if (result?.id?.lt && result?.endStatus === "active") {
+        alert("Successfully unstaked token!");
+        setIsUnstaking(false);
+        await getStakingInfo();
+      }
+    } catch (e) {
+      setIsUnstaking(false);
+      console.error(e);
+    }
+  };
   return (
     <>
       <h1>Stake & Claim VenomPumpy</h1>
-      <div className="item-info">
-        <span>Staked Amount</span>
-        <b>{stakedAmount}</b> 
+      <div className="tvl_apy">
+        <div className="item-info">
+          <div style={{textAlign:"center"}}>
+            <b>TVL</b><br />
+            <b>{tvl}</b>
+          </div>
+          <div style={{textAlign:"center"}}>
+            <b>APY</b><br />
+            <b>{"50%"}</b>
+          </div>
+        </div>
       </div>
-      <div className="item-info">
-        <span>Claimed Amount</span>
-        <b>{claimedAmount}</b>
+      <div className="balance">
+        <div className="item-info item-info-balance">
+          <div style={{textAlign:"center", fontSize: 30}}>
+            <b>{tokenBalance}</b><br />
+            <b style={{fontSize: 17}}>VenomPumpy Owned</b>
+          </div>
+        </div>
       </div>
-      <div className="item-info">
-        <span>APY</span>
-        <b>50%</b>
+      <div className="staked_reward">
+        <div className="item-info">
+          <div style={{textAlign:"center"}}>
+            <b>STAKED</b><br />
+            <b>{stakedAmount}</b>
+          </div>
+          <div style={{textAlign:"center"}}>
+            <b>REWARD</b><br />
+            <b>{claimedAmount}</b>
+          </div>
+        </div>
       </div>
       <div className="number">
         <input
           type="number"
           min={0}
           value={tokenAmount !== undefined ? tokenAmount : ""}
-          style={{textAlign:"right"}}
-          placeholder="Enter amount to stake"
+          style={{textAlign: "right"}}
+          placeholder="Enter amount to stake or unstake"
           onChange={(e) => {
             onChangeAmount(e.target.value);
           }}
         />
       </div>
       <div className="card__amount">
-        <a className={isClaiming ? "btn disabled" : "btn"} onClick={claimTokens}>
-          Claim
-        </a>
         <a className={(!tokenAmount || isStaking ) ? "btn disabled" : "btn"} onClick={stakeTokens}>
           Stake
+        </a>
+        <a className={(!tokenAmount || tokenAmount>=stakedAmount) || isUnstaking ? "btn btn btn_unstake disabled" : "btn btn_unstake"} onClick={unstakeTokens}>
+          Unstake
+        </a>
+      </div>
+      <div className="card__amount">
+        <a className={isClaiming ? "btn btn_claim disabled" : "btn btn_claim"} onClick={claimTokens}>
+          Claim
         </a>
       </div>
     </>

@@ -160,8 +160,19 @@ a {
   width: calc(50% - 12px);
   margin: 0 6px;
 }
+.card__amount .btn_claim {
+  width: 100%;
+  background-color: transparent;
+  border: #0f926c 1px solid;
+  box-shadow: none;
+}
+.card__amount .btn_unstake {
+  background-color: #55f;
+  border: #0f926c 1px solid;
+  box-shadow: none;
+}
 .item-info {
-  background: rgba(255, 255, 255, 0.08);
+  /* background: rgba(255, 255, 255, 0.08); */
   border-radius: 10px;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -185,6 +196,9 @@ a {
 }
 .item-info_mt {
   margin-top: 24px;
+}
+.item-info-balance {
+  justify-content: center;
 }
 .number {
   position: relative;
@@ -344,4 +358,12 @@ header .logout:hover {
 
 .nav-menu {
   padding :3px 20px;
+}
+
+.tvl_apy {
+  padding: 0px 0px;
+}
+
+.staked_reward {
+  padding: 0px 40px;
 }
