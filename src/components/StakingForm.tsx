@@ -75,9 +75,8 @@ function StakingForm({ venomConnect, address, provider }: Props) {
       .totalStakedAmount({})
       .call({});
       setTvl(parseFloat(totalStakedAmount)/(10**9));
-      const tokenBal = (await tokenWalletContract.methods.balance({answerId: 0} as never).call()).value0;
-      setTokenBalance(parseFloat((tokenBal/(10**9)).toFixed(2)));
-      console.log(totalStakedAmount, "RES");
+      const tokenBal = await tokenWalletContract.methods.balance({answerId: 0} as never).call();
+      setTokenBalance(parseFloat((tokenBal.value0/(10**9)).toFixed(2)));
     } catch (error) {
       console.log(error, "GREAT")
     }
