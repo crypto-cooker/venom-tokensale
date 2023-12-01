@@ -56,9 +56,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
         try {
           const tokenWalletAddress = (await tokenRootContract.methods.walletOf({answerId: 0, walletOwner: address}).call()).value0;
           const tokenWalletInstance = new provider.Contract(tokenWalletAbi, tokenWalletAddress);
-          const { value0 } = await tokenWalletInstance.methods.balance({answerId: 0} as never).call();
           setTokenWalletContract(tokenWalletInstance);
-          setTokenBalance(parseFloat((value0/(10**9)).toFixed(2)));
         } catch (error) {
           console.log(error)
         }
@@ -77,6 +75,8 @@ function StakingForm({ venomConnect, address, provider }: Props) {
       .totalStakedAmount({})
       .call({});
       setTvl(parseFloat(totalStakedAmount)/(10**9));
+      const tokenBal = (await tokenWalletContract.methods.balance({answerId: 0} as never).call()).value0;
+      setTokenBalance(parseFloat((tokenBal/(10**9)).toFixed(2)));
       console.log(totalStakedAmount, "RES");
     } catch (error) {
       console.log(error, "GREAT")
@@ -230,7 +230,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
         </a>
       </div>
       <div className="card__amount">
-        <a className={isClaiming ? "btn btn_claim disabled" : "btn btn_claim"} onClick={claimTokens}>
+        <a className={isClaiming || stakedAmount==0 ? "btn btn_claim disabled" : "btn btn_claim"} onClick={claimTokens}>
           Claim
         </a>
       </div>
