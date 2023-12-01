@@ -76,6 +76,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
       .call({});
       setTvl(parseFloat(totalStakedAmount)/(10**9));
       const tokenBal = await tokenWalletContract.methods.balance({answerId: 0} as never).call();
+      console.log(tokenBal);
       setTokenBalance(parseFloat((tokenBal.value0/(10**9)).toFixed(2)));
     } catch (error) {
       console.log(error, "GREAT")
@@ -83,22 +84,10 @@ function StakingForm({ venomConnect, address, provider }: Props) {
   }
 
   useEffect(()=> {
-    if(stakingContract && address) {
+    if(stakingContract && tokenWalletContract && address) {
       getStakingInfo();
     }
-  }, [stakingContract, address])
-  
-
-  // handler that helps us to ask user about adding our token to the user's venom wallet
-  const onTokenAdd = () => {
-    console.log(provider?.addAsset({
-      account: new Address(address as string), // user's wallet address
-      params: {
-        rootContract: new Address("0:91470b9a77ada682c9f9aee5ae0a4e2ea549ee51f7b0f2cba5182ffec2eb233f"), // TokenRoot address
-      },
-      type: "tip3_token", // tip3 - is a standart we use
-    }))
-  }
+  }, [stakingContract, address, tokenWalletContract])
 
   const claimTokens = async () => {
     if(!stakingContract || !address) return;
