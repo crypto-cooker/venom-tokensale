@@ -1,14 +1,12 @@
 import { Address, ProviderRpcClient } from 'everscale-inpage-provider';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { VenomConnect } from 'venom-connect';
 
 import BackImg from '../styles/img/decor.svg';
-import LogOutImg from '../styles/img/log_out.svg';
 import {BrowserView, MobileView} from 'react-device-detect';
 import Hamburger from 'hamburger-react'
 
 // Importing of our contract ABI from smart-contract build action. Of cource we need ABI for contracts calls.
-import tokenRootAbi from '../abi/TokenRoot.abi.json';
 import tokenWalletAbi from '../abi/TokenWallet.abi.json';
 
 import ConnectWallet from '../components/ConnectWallet'
