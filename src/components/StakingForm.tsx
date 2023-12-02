@@ -28,7 +28,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
   const [stakedAmount, setStakedAmount] = useState(0);
   const [claimedAmount, setClaimedAmount] = useState(0);
   const [rewardAmount, setRewardAmount] = useState(0);
-  const [stakingAddress, setStakingAddress] = useState("0:0372833938b0d03d53428563e6f970cc5cc808323a5ba93ec9a0ebd8d4690b47");
+  const [stakingAddress, setStakingAddress] = useState("0:2d281a909efdd45ec79a46ab88d3841230da0a7f09b2d6a61c25723edad563ef");
   const [isStaking, setIsStaking] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [isUnstaking, setIsUnstaking] = useState(false);
@@ -77,7 +77,10 @@ function StakingForm({ venomConnect, address, provider }: Props) {
       setTvl(parseFloat(totalStakedAmount)/(10**9));
       const tokenBal = await tokenWalletContract.methods.balance({answerId: 0} as never).call();
       setTokenBalance(parseFloat((tokenBal.value0/(10**9)).toFixed(2)));
-      
+
+      const result = (await stakingContract.methods.getRewardAmount({staker: address}).call()).value0;
+      console.log(result);
+      setRewardAmount(result/(10**9));      
     } catch (error) {
       console.log(error, "GREAT")
     }
@@ -193,7 +196,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
           </div>
           <div style={{textAlign:"center"}}>
             <b>REWARD</b><br />
-            <b>{claimedAmount}</b>
+            <b>{rewardAmount}</b>
           </div>
         </div>
       </div>

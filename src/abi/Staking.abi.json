@@ -35,6 +35,15 @@
 			]
 		},
 		{
+			"name": "getRewardAmount",
+			"inputs": [
+				{"name":"staker","type":"address"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint128"}
+			]
+		},
+		{
 			"name": "claim",
 			"inputs": [
 			],
