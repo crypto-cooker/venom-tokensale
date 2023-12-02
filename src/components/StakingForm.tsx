@@ -10,8 +10,6 @@ import stakingAbi from "../abi/Staking.abi.json";
 import tokenRootAbi from "../abi/TokenRoot.abi.json";
 import tokenWalletAbi from "../abi/TokenWallet.abi.json";
 
-import AddTokenImg from "../styles/img/add_token.svg";
-
 type Props = {
   balance: string | undefined;
   getBalance: (wallet: string) => void;
@@ -29,6 +27,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
   const [tokenBalance, setTokenBalance] = useState(0);
   const [stakedAmount, setStakedAmount] = useState(0);
   const [claimedAmount, setClaimedAmount] = useState(0);
+  const [rewardAmount, setRewardAmount] = useState(0);
   const [stakingAddress, setStakingAddress] = useState("0:0372833938b0d03d53428563e6f970cc5cc808323a5ba93ec9a0ebd8d4690b47");
   const [isStaking, setIsStaking] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
@@ -71,13 +70,14 @@ function StakingForm({ venomConnect, address, provider }: Props) {
       .call({});
       setStakedAmount(parseFloat(value0.amount)/(10**9));
       setClaimedAmount(parseFloat(value0.claimedAmount)/(10**9));
+      //setRewardAmount()
       const { totalStakedAmount } = await stakingContract.methods
       .totalStakedAmount({})
       .call({});
       setTvl(parseFloat(totalStakedAmount)/(10**9));
       const tokenBal = await tokenWalletContract.methods.balance({answerId: 0} as never).call();
-      console.log(tokenBal);
       setTokenBalance(parseFloat((tokenBal.value0/(10**9)).toFixed(2)));
+      
     } catch (error) {
       console.log(error, "GREAT")
     }
@@ -219,7 +219,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
       </div>
       <div className="card__amount">
         <a className={isClaiming || stakedAmount==0 ? "btn btn_claim disabled" : "btn btn_claim"} onClick={claimTokens}>
-          Claim
+          Claim Reward
         </a>
       </div>
     </>

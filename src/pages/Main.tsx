@@ -4,7 +4,8 @@ import { VenomConnect } from 'venom-connect';
 
 import BackImg from '../styles/img/decor.svg';
 import LogOutImg from '../styles/img/log_out.svg';
-
+import {BrowserView, MobileView} from 'react-device-detect';
+import Hamburger from 'hamburger-react'
 
 // Importing of our contract ABI from smart-contract build action. Of cource we need ABI for contracts calls.
 import tokenRootAbi from '../abi/TokenRoot.abi.json';
@@ -12,13 +13,13 @@ import tokenWalletAbi from '../abi/TokenWallet.abi.json';
 
 import ConnectWallet from '../components/ConnectWallet'
 import StakingForm from '../components/StakingForm';
-
+import "../styles/navbar.css"
 type Props = {
   venomConnect: VenomConnect | undefined;
 };
 
 function Main({ venomConnect }: Props) {
-
+  const [isOpen, setOpen] = useState(false)
   const [venomProvider, setVenomProvider] = useState<any>();
   const [address, setAddress] = useState<any>();
 
@@ -30,28 +31,6 @@ function Main({ venomConnect }: Props) {
   const getAddress = async (provider: any) => {
     const providerState = await provider?.getProviderState?.();
     return providerState?.permissions.accountInteraction?.address.toString();
-  };
-
-  // This function will call walletOf function of TokenRoot contract, to obtain TokenWallet of connecte4d user.
-  const setupTokenWalletAddress = async (standalone: ProviderRpcClient, wallet: string): Promise<string | undefined> => {
-    try {
-      const contractAddress = new Address('0:91470b9a77ada682c9f9aee5ae0a4e2ea549ee51f7b0f2cba5182ffec2eb233f'); // Our TokenRoot address in venom testnet
-      // We will use standalone-client form our venomConnect instance to call a view method of contract
-      const contract = new standalone.Contract(tokenRootAbi, contractAddress); // creating a contract instance with contract address and interface (ABI)
-      // Smart-contract calling. Function walletOf of TokenRoot will calculate user's tokenWallet address by it's VenomWallet address (wich was connected)
-      const tokenWallet = (await contract.methods
-        .walletOf({
-          answerId: 0,
-          walletOwner: wallet,
-        } as never)
-        .call()) as any;
-      if (!tokenWallet) return undefined;
-      tokenWalletAddress = tokenWallet.value0._address;
-      return tokenWalletAddress;
-    } catch (e: any) {
-      console.error(e);
-    }
-    return undefined;
   };
 
   // Same idea for token balance fetching. Usage of standalone client and balance method of TIP-3 TokenWallet
@@ -136,22 +115,59 @@ function Main({ venomConnect }: Props) {
 
   return (
     <div className="box">
-        <header>
-          <a className='nav-menu'>HOME</a>
-          <a className='nav-menu'>VPUMPY STAKING</a>
-          <a className='nav-menu'>NFT STAKING</a>
-          <a className='nav-menu'>LEADERBOARD</a>
-          {!address &&
-          <a className="logout" onClick={onConnect}>
-            CONNECT
-          </a>}
-          {address &&
-          <a className="logout" onClick={onDisconnect}>
-            {address.slice(0,5)+"..."+address.slice(-4)}
-          </a>}
-        </header>
+        <BrowserView>
+          <header>
+            <a className='nav-menu'>HOME</a>
+            <a className='nav-menu'>VPUMPY STAKING</a>
+            <a className='nav-menu'>NFT STAKING</a>
+            <a className='nav-menu'>LEADERBOARD</a>
+            {!address &&
+            <a className="logout" onClick={onConnect}>
+              CONNECT
+            </a>}
+            {address &&
+            <a className="logout" onClick={onDisconnect}>
+              {address.slice(0,5)+"..."+address.slice(-4)}
+            </a>}
+          </header>
+          <img className="decor" src={BackImg} alt="back" />
+        </BrowserView>
+        <MobileView>
+          <nav className="navigation">
+            <Hamburger toggled={isOpen} toggle={setOpen} />
 
-      <img className="decor" src={BackImg} alt="back" />
+              <div
+                className={
+                    isOpen ? "navigation-menu expanded" : "navigation-menu"
+                }
+              >
+                <ul>
+                  <li>
+                    <a href="/home">HOME</a>
+                  </li>
+                  <li>
+                    <a href="/about">VPUMPY STAKING</a>
+                  </li>
+                  <li>
+                    <a href="/contact">NFT STAKING</a>
+                  </li>
+                  <li>
+                    <a href="/leaderboard">LEADERBOARD</a>
+                  </li>
+                  <li>
+                  {!address &&
+                    <a className="logout" onClick={onConnect}>
+                      CONNECT
+                    </a>}
+                    {address &&
+                    <a className="logout" onClick={onDisconnect}>
+                      {address.slice(0,5)+"..."+address.slice(-4)}
+                    </a>}
+                    </li>
+                </ul>
+              </div>
+            </nav>
+        </MobileView>
       <div className="card">
         <div className="card__wrap">
           {address ? (

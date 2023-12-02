@@ -1,0 +1,31 @@
+@media screen and (max-width: 768px) {
+  .navigation-menu ul {
+    flex-direction: column;
+    width: 100%;
+    background-color: #191919;
+    border-top: 1px solid black;
+    list-style: none;
+    padding: 0px;
+  }
+  .navigation-menu li {
+    text-align: center;
+    margin: 0;
+    padding: 10px 0px;
+    border-bottom: #383737 1px solid;
+  }
+  .navigation-menu li a {
+    color: white;
+    width: 100%;
+    padding: 1.5rem 0;
+  }
+  .navigation-menu li:hover {
+    background-color: #383737;
+  }
+  .navigation-menu ul {
+    /* previous styles */
+    display: none;
+  }
+  .navigation-menu.expanded ul {
+    display: block;
+  }
+}
