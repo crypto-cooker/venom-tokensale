@@ -172,7 +172,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
   };
   return (
     <>
-      <h1>Stake & Claim VenomPumpy</h1>
+      <h1>Stake and Earn More Venompumpy</h1>
       <div className="tvl_apy">
         <div className="item-info">
           <div style={{textAlign:"center"}}>
