@@ -1,4 +1,12 @@
 @media screen and (max-width: 768px) {
+  .logo-section img {
+    width: 50px;
+  }
+  .navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
   .navigation-menu ul {
     flex-direction: column;
     width: 100%;
@@ -24,6 +32,12 @@
   .navigation-menu ul {
     /* previous styles */
     display: none;
+  }
+  .hamburger-react {
+    position: absolute !important;
+    top: 10px;
+    right: 10px;
+    height: 40px;
   }
   .navigation-menu.expanded ul {
     display: block;

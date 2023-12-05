@@ -12,6 +12,7 @@ import tokenWalletAbi from '../abi/TokenWallet.abi.json';
 import ConnectWallet from '../components/ConnectWallet'
 import StakingForm from '../components/StakingForm';
 import "../styles/navbar.css"
+import logo from "../styles/img/logo.png";
 type Props = {
   venomConnect: VenomConnect | undefined;
 };
@@ -115,56 +116,67 @@ function Main({ venomConnect }: Props) {
     <div className="box">
         <BrowserView>
           <header>
-            <a className='nav-menu'>HOME</a>
-            <a className='nav-menu'>VPUMPY STAKING</a>
-            <a className='nav-menu'>NFT STAKING</a>
-            <a className='nav-menu'>LEADERBOARD</a>
-            {!address &&
-            <a className="logout" onClick={onConnect}>
-              CONNECT
-            </a>}
-            {address &&
-            <a className="logout" onClick={onDisconnect}>
-              {address.slice(0,5)+"..."+address.slice(-4)}
-            </a>}
+            <a className='logo-section' href='https://venompumpy.com'>
+              <img src={logo} alt="Logo" />
+            </a>
+            <div className="menu-section">
+              <a className='nav-menu'>HOME</a>
+              <a className='nav-menu'>VPUMPY STAKING</a>
+              <a className='nav-menu'>NFT STAKING</a>
+              <a className='nav-menu'>LEADERBOARD</a>
+              {!address &&
+              <a className="logout" onClick={onConnect}>
+                CONNECT
+              </a>}
+              {address &&
+              <a className="logout" onClick={onDisconnect}>
+                {address.slice(0,5)+"..."+address.slice(-4)}
+              </a>}
+            </div>
           </header>
           <img className="decor" src={BackImg} alt="back" />
         </BrowserView>
         <MobileView>
-          <nav className="navigation">
-            <Hamburger toggled={isOpen} toggle={setOpen} />
-
-              <div
-                className={
-                    isOpen ? "navigation-menu expanded" : "navigation-menu"
-                }
-              >
-                <ul>
-                  <li>
-                    <a href="/home">HOME</a>
+          <nav className={!isOpen ? "navigation": ""} style={{position: "relative"}}>
+            <div style={{display:"flex", justifyContent: "space-between", width: "100%"}}>
+              <a className='logo-section' href='https://venompumpy.com'>
+                <img src={logo} alt="Logo" />
+              </a> 
+                
+              <Hamburger toggled={isOpen} toggle={setOpen} />
+            </div>
+            {isOpen &&
+            <div
+              className={
+                  isOpen ? "navigation-menu expanded" : "navigation-menu"
+              }
+            >
+              <ul>
+                <li>
+                  <a href="/home">HOME</a>
+                </li>
+                <li>
+                  <a href="/about">VPUMPY STAKING</a>
+                </li>
+                <li>
+                  <a href="/contact">NFT STAKING</a>
+                </li>
+                <li>
+                  <a href="/leaderboard">LEADERBOARD</a>
+                </li>
+                <li>
+                {!address &&
+                  <a className="logout" onClick={onConnect}>
+                    CONNECT
+                  </a>}
+                  {address &&
+                  <a className="logout" onClick={onDisconnect}>
+                    {address.slice(0,5)+"..."+address.slice(-4)}
+                  </a>}
                   </li>
-                  <li>
-                    <a href="/about">VPUMPY STAKING</a>
-                  </li>
-                  <li>
-                    <a href="/contact">NFT STAKING</a>
-                  </li>
-                  <li>
-                    <a href="/leaderboard">LEADERBOARD</a>
-                  </li>
-                  <li>
-                  {!address &&
-                    <a className="logout" onClick={onConnect}>
-                      CONNECT
-                    </a>}
-                    {address &&
-                    <a className="logout" onClick={onDisconnect}>
-                      {address.slice(0,5)+"..."+address.slice(-4)}
-                    </a>}
-                    </li>
-                </ul>
-              </div>
-            </nav>
+              </ul>
+            </div>}
+          </nav>
         </MobileView>
       <div className="card">
         <div className="card__wrap">

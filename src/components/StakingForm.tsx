@@ -28,10 +28,11 @@ function StakingForm({ venomConnect, address, provider }: Props) {
   const [stakedAmount, setStakedAmount] = useState(0);
   const [claimedAmount, setClaimedAmount] = useState(0);
   const [rewardAmount, setRewardAmount] = useState(0);
-  const [stakingAddress, setStakingAddress] = useState("0:2d281a909efdd45ec79a46ab88d3841230da0a7f09b2d6a61c25723edad563ef");
+  const [stakingAddress, setStakingAddress] = useState("0:18d256a114d3a4951185bbe198aabaa859eb948fa24647c8bd93f8aba6f650df");
   const [isStaking, setIsStaking] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [isUnstaking, setIsUnstaking] = useState(false);
+  const [unstakable, setUnstakable] = useState(true);
   const onChangeAmount = (e: string) => {
     if (e === "") setTokenAmount(undefined);
     setTokenAmount(Number(e));
@@ -80,7 +81,11 @@ function StakingForm({ venomConnect, address, provider }: Props) {
 
       const result = (await stakingContract.methods.getRewardAmount({staker: address}).call()).value0;
       console.log(result);
-      setRewardAmount(result/(10**9));      
+      setRewardAmount(result/(10**9));
+      
+      const res = await stakingContract.methods.unstakable({staker: address}).call();
+      setUnstakable(res.value0);
+      console.log(res);
     } catch (error) {
       console.log(error, "GREAT")
     }
@@ -216,7 +221,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
         <a className={(!tokenAmount || isStaking ) ? "btn disabled" : "btn"} onClick={stakeTokens}>
           Stake
         </a>
-        <a className={(!tokenAmount || tokenAmount>=stakedAmount) || isUnstaking ? "btn btn btn_unstake disabled" : "btn btn_unstake"} onClick={unstakeTokens}>
+        <a className={(!tokenAmount || tokenAmount>=stakedAmount) || isUnstaking || !unstakable ? "btn btn btn_unstake disabled" : "btn btn_unstake"} onClick={unstakeTokens}>
           Unstake
         </a>
       </div>

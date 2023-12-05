@@ -243,6 +243,19 @@ footer {
   padding: 20px;
 }
 header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo-section {
+  padding: 10px;
+  cursor: pointer;
+  z-index: 100;
+}
+.logo-section img {
+  width: 80px;
+}
+.menu-section {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
