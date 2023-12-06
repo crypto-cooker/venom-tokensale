@@ -256,6 +256,7 @@ header {
   width: 80px;
 }
 .menu-section {
+  z-index: 100;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
