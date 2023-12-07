@@ -28,7 +28,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
   const [stakedAmount, setStakedAmount] = useState(0);
   const [claimedAmount, setClaimedAmount] = useState(0);
   const [rewardAmount, setRewardAmount] = useState(0);
-  const [stakingAddress, setStakingAddress] = useState("0:18d256a114d3a4951185bbe198aabaa859eb948fa24647c8bd93f8aba6f650df");
+  const [stakingAddress, setStakingAddress] = useState("0:5a065cb9aa7518b6ebb3dfcd2464aa853b5d24913556059b4551803428c792c0");
   const [isStaking, setIsStaking] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [isUnstaking, setIsUnstaking] = useState(false);
@@ -138,7 +138,8 @@ function StakingForm({ venomConnect, address, provider }: Props) {
           amount: new BigNumber(0.5).multipliedBy(10 ** 9).toString(),
           bounce: true,
         });
-      if (result?.id?.lt && result?.endStatus === "active") {
+        if (result?.id?.lt && result?.endStatus === "active") {
+        console.log(result)
         alert("Successfully staked token!");
         setIsStaking(false);
         await getStakingInfo();
