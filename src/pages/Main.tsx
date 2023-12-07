@@ -31,40 +31,6 @@ function Main({ venomConnect }: Props) {
     const providerState = await provider?.getProviderState?.();
     return providerState?.permissions.accountInteraction?.address.toString();
   };
-
-  // Same idea for token balance fetching. Usage of standalone client and balance method of TIP-3 TokenWallet
-  // We already knows user's TokenWallet address
-  const getBalance = async (wallet: string) => {
-    if (!venomConnect) return;
-    const standalone: ProviderRpcClient | undefined = await venomConnect?.getStandalone('venomwallet');
-    if (standalone) {
-      if (!tokenWalletAddress) {
-        //await setupTokenWalletAddress(standalone, wallet);
-      }
-      if (!venomProvider || !tokenWalletAddress) return;
-      try {
-        const contractAddress = new Address(tokenWalletAddress);
-        const contract = new standalone.Contract(tokenWalletAbi, contractAddress);
-        // We check a contract state here to acknowledge if TokenWallet already deployed
-        // As you remember, wallet can be deployed with first transfer on it.
-        // If our wallet isn't deployed, so it's balance is 0 :)
-        const contractState = await venomProvider.rawApi.getFullContractState({ address: tokenWalletAddress });
-        if (contractState.state) {
-          // But if this deployed, just call a balance function
-          const result = (await contract.methods.balance({ answerId: 0 } as never).call()) as any;
-          const tokenBalance = result.value0; // It will be with decimals. Format if you want by dividing with 10**decimals
-          setBalance(tokenBalance);
-        } else {
-          setBalance('0');
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    } else {
-      alert('Standalone is not available now');
-    }
-  };
-
   // Any interaction with venom-wallet (address fetching is included) needs to be authentificated
   const checkAuth = async (_venomConnect: any) => {
     const auth = await _venomConnect?.checkAuth();
@@ -105,11 +71,6 @@ function Main({ venomConnect }: Props) {
       off?.();
     };
   }, [venomConnect]);
-
-  // Hook for balance setup
-  useEffect(() => {
-    if (address) getBalance(address);
-  }, [address]);
 
 
   return (
@@ -183,10 +144,8 @@ function Main({ venomConnect }: Props) {
           {address ? (
             <StakingForm
               address={address}
-              balance={balance}
               venomConnect={venomConnect}
               provider={venomProvider}
-              getBalance={getBalance}
             />
           ) : (
             <ConnectWallet venomConnect={venomConnect} />

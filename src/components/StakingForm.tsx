@@ -11,8 +11,6 @@ import tokenRootAbi from "../abi/TokenRoot.abi.json";
 import tokenWalletAbi from "../abi/TokenWallet.abi.json";
 
 type Props = {
-  balance: string | undefined;
-  getBalance: (wallet: string) => void;
   venomConnect: VenomConnect | undefined;
   address: string | undefined;
   provider: ProviderRpcClient | undefined;
