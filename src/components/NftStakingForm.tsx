@@ -9,7 +9,7 @@ import BigNumber from "bignumber.js";
 import stakingAbi from "../abi/Staking.abi.json";
 import tokenRootAbi from "../abi/TokenRoot.abi.json";
 import tokenWalletAbi from "../abi/TokenWallet.abi.json";
-import { getNftImage } from "../utils/nft";
+import { getNftImage, getNftsByIndexes } from "../utils/nft";
 
 type Props = {
   venomConnect: VenomConnect | undefined;
@@ -49,12 +49,72 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
     }
   }, [provider])
 
+
+  const saltCode = async (provider: ProviderRpcClient, ownerAddress: string) => {
+    // Index StateInit you should take from github. It ALWAYS constant!
+    const INDEX_BASE_64 = 'te6ccgECIAEAA4IAAgE0AwEBAcACAEPQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAgaK2zUfBAQkiu1TIOMDIMD/4wIgwP7jAvILHAYFHgOK7UTQ10nDAfhmifhpIds80wABn4ECANcYIPkBWPhC+RDyqN7TPwH4QyG58rQg+COBA+iogggbd0CgufK0+GPTHwHbPPI8EQ4HA3rtRNDXScMB+GYi0NMD+kAw+GmpOAD4RH9vcYIImJaAb3Jtb3Nwb3T4ZNwhxwDjAiHXDR/yvCHjAwHbPPI8GxsHAzogggujrde64wIgghAWX5bBuuMCIIIQR1ZU3LrjAhYSCARCMPhCbuMA+EbycyGT1NHQ3vpA0fhBiMjPjits1szOyds8Dh8LCQJqiCFus/LoZiBu8n/Q1PpA+kAwbBL4SfhKxwXy4GT4ACH4a/hs+kJvE9cL/5Mg+GvfMNs88gAKFwA8U2FsdCBkb2Vzbid0IGNvbnRhaW4gYW55IHZhbHVlAhjQIIs4rbNYxwWKiuIMDQEK103Q2zwNAELXTNCLL0pA1yb0BDHTCTGLL0oY1yYg10rCAZLXTZIwbeICFu1E0NdJwgGOgOMNDxoCSnDtRND0BXEhgED0Do6A34kg+Gz4a/hqgED0DvK91wv/+GJw+GMQEQECiREAQ4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAD/jD4RvLgTPhCbuMA0x/4RFhvdfhk0ds8I44mJdDTAfpAMDHIz4cgznHPC2FeIMjPkll+WwbOWcjOAcjOzc3NyXCOOvhEIG8TIW8S+ElVAm8RyM+EgMoAz4RAzgH6AvQAcc8LaV4gyPhEbxXPCx/OWcjOAcjOzc3NyfhEbxTi+wAaFRMBCOMA8gAUACjtRNDT/9M/MfhDWMjL/8s/zsntVAAi+ERwb3KAQG90+GT4S/hM+EoDNjD4RvLgTPhCbuMAIZPU0dDe+kDR2zww2zzyABoYFwA6+Ez4S/hK+EP4QsjL/8s/z4POWcjOAcjOzc3J7VQBMoj4SfhKxwXy6GXIz4UIzoBvz0DJgQCg+wAZACZNZXRob2QgZm9yIE5GVCBvbmx5AELtRNDT/9M/0wAx+kDU0dD6QNTR0PpA0fhs+Gv4avhj+GIACvhG8uBMAgr0pCD0oR4dABRzb2wgMC41OC4yAAAADCD4Ye0e2Q==';
+    // Gettind a code from Index StateInit
+    const tvc = await provider.splitTvc(INDEX_BASE_64);
+    if (!tvc.code) throw new Error('tvc code is empty');
+    // Salt structure that we already know
+    const saltStruct = [
+      { name: 'collection', type: 'address' },
+      { name: 'owner', type: 'address' },
+      { name: 'type', type: 'fixedbytes3' }, // according on standards, each index salted with string 'nft'
+    ] as const;
+    const { code: saltedCode } = await provider.setCodeSalt({
+      code: tvc.code,
+      salt: {
+        structure: saltStruct,
+        abiVersion: '2.1',
+        data: {
+          collection: new Address("0:127f28a512b73050a306a0836bb683bde3598e268594874b6aaa9a88c3b479d5"),
+          owner: new Address(ownerAddress),
+          type: btoa('nft'),
+        },
+      },
+    });
+    return saltedCode;
+  };
+
+  // Method, that return Index'es addresses by single query with fetched code hash
+  const getAddressesFromIndex = async (codeHash: string): Promise<Address[] | undefined> => {
+    const addresses = await provider?.getAccountsByCodeHash({ codeHash });
+    return addresses?.accounts;
+  };
+
+  // Main method of this component
+  const loadNFTs = async (provider: ProviderRpcClient, ownerAddress: string) => {
+    try {
+      // Take a salted code
+      const saltedCode = await saltCode(provider, ownerAddress);
+      // Hash it
+      const codeHash = await provider.getBocHash(saltedCode);
+      if (!codeHash) {
+        return;
+      }
+      // Fetch all Indexes by hash
+      const indexesAddresses = await getAddressesFromIndex(codeHash);
+      console.log(indexesAddresses)
+      if (!indexesAddresses || !indexesAddresses.length) {
+        return;
+      }
+      // Fetch all image URLs
+      const nftURLs = await getNftsByIndexes(provider, indexesAddresses);
+      console.log(nftURLs);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+
   useEffect(()=> {
     if(provider && address && tokenRootContract) {
       (async() => {
         try {
+          await loadNFTs(provider, address);
           const images = await getNftImage(provider, new Address("0:127f28a512b73050a306a0836bb683bde3598e268594874b6aaa9a88c3b479d5"));
-          console.log(images);
+          
           const tokenWalletAddress = (await tokenRootContract.methods.walletOf({answerId: 0, walletOwner: address}).call()).value0;
           const tokenWalletInstance = new provider.Contract(tokenWalletAbi, tokenWalletAddress);
           setTokenWalletContract(tokenWalletInstance);
@@ -70,23 +130,6 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
       const { value0 } = await stakingContract.methods
       .getStakedInfo({staker: address})
       .call({});
-      setStakedAmount(parseFloat(value0.amount)/(10**9));
-      setClaimedAmount(parseFloat(value0.claimedAmount)/(10**9));
-      //setRewardAmount()
-      const { totalStakedAmount } = await stakingContract.methods
-      .totalStakedAmount({})
-      .call({});
-      setTvl(parseFloat(totalStakedAmount)/(10**9));
-      const tokenBal = await tokenWalletContract.methods.balance({answerId: 0} as never).call();
-      setTokenBalance(parseFloat((tokenBal.value0/(10**9)).toFixed(2)));
-
-      const result = (await stakingContract.methods.getRewardAmount({staker: address}).call()).value0;
-      console.log(result);
-      setRewardAmount(result/(10**9));
-      
-      const res = await stakingContract.methods.unstakable({staker: address}).call();
-      setUnstakable(res.value0);
-      console.log(res);
     } catch (error) {
       console.log(error, "GREAT")
     }

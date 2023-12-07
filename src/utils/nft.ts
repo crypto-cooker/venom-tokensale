@@ -1,6 +1,7 @@
 import { Address, ProviderRpcClient } from 'everscale-inpage-provider';
 // Of course you need to place a contract ABI somewhere
 import nftAbi from "../abi/NFT.abi.json";
+import indexAbi from '../abi/Index.abi.json';
 
 // TIP-4.2. standard (https://docs.venom.foundation/standards/TIP/TIP-4/2)
 interface BaseNftJson {
@@ -35,3 +36,20 @@ export const getCollectionItems = async (provider: ProviderRpcClient, nftAddress
     })
   );
 };
+
+
+type IndexInfo = {
+  nft: Address;
+}
+export const getNftsByIndexes = async (provider: ProviderRpcClient, indexAddresses: Address[]): Promise<string[]> => {
+  const nftAddresses = await Promise.all(
+    indexAddresses.map(async (indexAddress) => {
+      const indexContract = new provider.Contract(indexAbi, indexAddress);
+      const indexInfo = (await indexContract.methods.getInfo({ answerId: 0 } as never).call()) as IndexInfo;
+      return indexInfo.nft;
+    })
+  );
+  console.log(nftAddresses);
+  return getCollectionItems(provider, nftAddresses)
+}
+
