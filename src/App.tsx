@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './styles/main.css';
 
 import { initVenomConnect } from './venom-connect/configure';
 import VenomConnect from 'venom-connect';
 import Main from './pages/Main';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+
 
 function App() {
 
@@ -18,7 +20,12 @@ function App() {
 
 
   return (
-    <Main venomConnect={venomConnect} />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Main />} />
+        <Route path="/nft_staking" element={<Main />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

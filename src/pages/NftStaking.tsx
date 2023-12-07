@@ -11,7 +11,7 @@ import "../styles/navbar.css"
 import logo from "../styles/img/logo.png";
 import { initVenomConnect } from "../venom-connect/configure";
 
-function Main() {
+function NftStaking() {
   
   const [venomConnect, setVenomConnect] = useState<VenomConnect | undefined>();
   const init = async () => {
@@ -121,10 +121,10 @@ function Main() {
                   <a href="/home">HOME</a>
                 </li>
                 <li>
-                  <a href="/about">VPUMPY STAKING</a>
+                  <a href="/">VPUMPY STAKING</a>
                 </li>
                 <li>
-                  <a href="/contact">NFT STAKING</a>
+                  <a href="/nft_staking">NFT STAKING</a>
                 </li>
                 <li>
                   <a href="/leaderboard">LEADERBOARD</a>
@@ -160,4 +160,4 @@ function Main() {
   );
 }
   
-export default Main;
+export default NftStaking;
