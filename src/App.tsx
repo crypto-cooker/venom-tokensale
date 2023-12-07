@@ -4,6 +4,7 @@ import './styles/main.css';
 import { initVenomConnect } from './venom-connect/configure';
 import VenomConnect from 'venom-connect';
 import Main from './pages/Main';
+import NftStaking from './pages/NftStaking';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 
@@ -23,7 +24,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Main />} />
-        <Route path="/nft_staking" element={<Main />} />
+        <Route path="/nft_staking" element={<NftStaking />} />
       </Routes>
     </BrowserRouter>
   );

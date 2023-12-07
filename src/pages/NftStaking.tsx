@@ -6,7 +6,7 @@ import BackImg from '../styles/img/decor.svg';
 import {BrowserView, MobileView} from 'react-device-detect';
 import Hamburger from 'hamburger-react'
 import ConnectWallet from '../components/ConnectWallet'
-import StakingForm from '../components/StakingForm';
+import NftStakingForm from '../components/NftStakingForm';
 import "../styles/navbar.css"
 import logo from "../styles/img/logo.png";
 import { initVenomConnect } from "../venom-connect/configure";
@@ -146,7 +146,7 @@ function NftStaking() {
       <div className="card">
         <div className="card__wrap">
           {address ? (
-            <StakingForm
+            <NftStakingForm
               address={address}
               venomConnect={venomConnect}
               provider={venomProvider}
