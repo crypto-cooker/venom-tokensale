@@ -122,6 +122,14 @@ a {
   margin: auto;
   max-width: 450px;
 }
+.nft_staking_card {
+  border-radius: 16px;
+  background-image: linear-gradient(154.15deg, rgba(32, 54, 255, 0.25) 25.78%, rgba(13, 223, 84, 0.25) 71.54%);
+  padding: 2px;
+  width: 100%;
+  margin: auto;
+  max-width: 750px;
+}
 .card__wrap {
   padding: 24px;
   background: #2A434B;
@@ -377,4 +385,21 @@ header .logout:hover {
 
 .staked_reward {
   padding: 0px 40px;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  grid-gap: 10px;
+}
+.nft_item {
+  padding: 15px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgb(26, 42, 62) 0%, rgb(11, 20, 30) 100%);
+}
+
+.nft_item video {
+  border-radius: 10px;
 }

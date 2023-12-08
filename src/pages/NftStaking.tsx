@@ -143,7 +143,7 @@ function NftStaking() {
             </div>}
           </nav>
         </MobileView>
-      <div className="card">
+      <div className="nft_staking_card">
         <div className="card__wrap">
           {address ? (
             <NftStakingForm

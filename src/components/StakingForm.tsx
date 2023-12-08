@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { VenomConnect } from "venom-connect";
 import { Address, ProviderRpcClient } from "everscale-inpage-provider";
 
@@ -9,6 +9,7 @@ import BigNumber from "bignumber.js";
 import stakingAbi from "../abi/Staking.abi.json";
 import tokenRootAbi from "../abi/TokenRoot.abi.json";
 import tokenWalletAbi from "../abi/TokenWallet.abi.json";
+import { STAKING_ADDR, TOKEN_ROOT } from "../utils/constant";
 
 type Props = {
   venomConnect: VenomConnect | undefined;
@@ -26,7 +27,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
   const [stakedAmount, setStakedAmount] = useState(0);
   const [claimedAmount, setClaimedAmount] = useState(0);
   const [rewardAmount, setRewardAmount] = useState(0);
-  const [stakingAddress, setStakingAddress] = useState("0:5a065cb9aa7518b6ebb3dfcd2464aa853b5d24913556059b4551803428c792c0");
+  const [stakingAddress, setStakingAddress] = useState(STAKING_ADDR);
   const [isStaking, setIsStaking] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [isUnstaking, setIsUnstaking] = useState(false);
@@ -42,7 +43,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
       const contractInstance = new provider.Contract(stakingAbi, contractAddress);
       setStakingContract(contractInstance);
 
-      const tokenRootAddress = new Address("0:4e73ec103bc5c4998e7d92473fdd17ee7d4941fd681f07f6610085119a90ce1c"); // Our token root address
+      const tokenRootAddress = new Address(TOKEN_ROOT); // Our token root address
       const tokenRootInstance = new provider.Contract(tokenRootAbi, tokenRootAddress);
       setTokenRootContract(tokenRootInstance);
     }
