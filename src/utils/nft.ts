@@ -41,7 +41,7 @@ export const getCollectionItems = async (provider: ProviderRpcClient, nftAddress
 type IndexInfo = {
   nft: Address;
 }
-export const getNftsByIndexes = async (provider: ProviderRpcClient, indexAddresses: Address[]): Promise<string[]> => {
+export const getNftsByIndexes = async (provider: ProviderRpcClient, indexAddresses: Address[]): Promise<Address[]> => {
   const nftAddresses = await Promise.all(
     indexAddresses.map(async (indexAddress) => {
       const indexContract = new provider.Contract(indexAbi, indexAddress);
@@ -49,7 +49,7 @@ export const getNftsByIndexes = async (provider: ProviderRpcClient, indexAddress
       return indexInfo.nft;
     })
   );
-  console.log(nftAddresses);
-  return getCollectionItems(provider, nftAddresses)
+  return nftAddresses;
+  // return getCollectionItems(provider, nftAddresses)
 }
 

@@ -9,8 +9,9 @@ import BigNumber from "bignumber.js";
 import stakingAbi from "../abi/Staking.abi.json";
 import tokenRootAbi from "../abi/TokenRoot.abi.json";
 import tokenWalletAbi from "../abi/TokenWallet.abi.json";
-import { getNftImage, getNftsByIndexes } from "../utils/nft";
-import { NFT_COLLECTION1, STAKING_ADDR, TOKEN_ROOT } from "../utils/constant";
+import NFTAbi from "../abi/NFT.abi.json";
+import { getNftsByIndexes } from "../utils/nft";
+import { COLLECTION1, NFT_COLLECTION1, STAKING_ADDR, TOKEN_ROOT } from "../utils/constant";
 
 type Props = {
   venomConnect: VenomConnect | undefined;
@@ -22,12 +23,11 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
   const [stakingContract, setStakingContract] = useState<any>();
   const [tokenRootContract, setTokenRootContract] = useState<any>();
   const [tokenWalletContract, setTokenWalletContract] = useState<any>();
-  const [stakingAddress, setStakingAddress] = useState(STAKING_ADDR);
-  const [nftUrls, setNftUrls] = useState<string[]>([]);
+  const [nftAddresses, setNftAddresses] = useState<Address[]>([]);
   
   useEffect(()=> {
     if(provider) {
-      const contractAddress = new Address(stakingAddress); // Our Staking contract address
+      const contractAddress = new Address(STAKING_ADDR); // Our Staking contract address
       const contractInstance = new provider.Contract(stakingAbi, contractAddress);
       setStakingContract(contractInstance);
 
@@ -88,9 +88,9 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
         return;
       }
       // Fetch all image URLs
-      const urls = await getNftsByIndexes(provider, indexesAddresses);
-      console.log(urls)
-      setNftUrls(urls);
+      const nftAddrs = await getNftsByIndexes(provider, indexesAddresses);
+      console.log(nftAddrs)
+      setNftAddresses(nftAddrs);
     } catch (e) {
       console.error(e);
     }
@@ -115,9 +115,10 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
   
   const getStakingInfo = async () => {
     try {
-      const { value0 } = await stakingContract.methods
+      const value0 = await stakingContract.methods
       .getStakedInfo({staker: address})
       .call({});
+      console.log(value0)
     } catch (error) {
       console.log(error, "GREAT")
     }
@@ -129,22 +130,36 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
     }
   }, [stakingContract, address, tokenWalletContract])
 
-  const stakeNFT = async (item:any) => {
+  const stakeNFT = async (nftAddr:Address) => {
     if (!venomConnect || !address || !provider || !tokenWalletContract) return;
-    console.log(item);
+    try {
+      const nftContract = new provider.Contract(NFTAbi, nftAddr);
+      console.log(nftAddr);
+      // return "sd";
+      const res = await nftContract.methods
+        .transfer({to: STAKING_ADDR, sendGasTo: address, callbacks: []} as never)
+        .send({
+          from: new Address(address),
+          amount: new BigNumber(3).multipliedBy(10 ** 9).toString(),
+          bounce: true,
+        });
+        console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+     
   };
-  const unstakeTokens = async () => {
-    if (!venomConnect || !address || !provider || !tokenWalletContract) return;
-    
+  const unstakeNFT = async () => {
+    if (!venomConnect || !address || !provider || !tokenWalletContract) return;    
   };
   return (
     <>
       <h1>Stake NFT to boost your APY</h1>
         <div className="grid">
-          {nftUrls.map((item) => 
-            <div className="nft_item">
+          {nftAddresses.map((item, index) => 
+            <div className="nft_item" key={index}>
               <video width="150"  autoPlay={true}>
-                <source src={item} type="video/mp4" />
+                <source src={COLLECTION1} type="video/mp4" />
               </video>
               <div className="btn" style={{cursor: "pointer"}} onClick={() => stakeNFT(item)}>Stake</div>
             </div>)}
