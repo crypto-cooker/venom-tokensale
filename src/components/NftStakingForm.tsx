@@ -137,10 +137,10 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
       console.log(nftAddr);
       // return "sd";
       const res = await nftContract.methods
-        .transfer({to: STAKING_ADDR, sendGasTo: address, callbacks: []} as never)
+        .transfer({to: STAKING_ADDR, sendGasTo: address, callbacks: [[STAKING_ADDR, {value:  new BigNumber(0.1).multipliedBy(10 ** 9).toString(), payload: ""}]]} as never)
         .send({
           from: new Address(address),
-          amount: new BigNumber(3).multipliedBy(10 ** 9).toString(),
+          amount: new BigNumber(1).multipliedBy(10 ** 9).toString(),
           bounce: true,
         });
         console.log(res);
@@ -155,15 +155,15 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
   return (
     <>
       <h1>Stake NFT to boost your APY</h1>
-        <div className="grid">
-          {nftAddresses.map((item, index) => 
-            <div className="nft_item" key={index}>
-              <video width="150"  autoPlay={true}>
-                <source src={COLLECTION1} type="video/mp4" />
-              </video>
-              <div className="btn" style={{cursor: "pointer"}} onClick={() => stakeNFT(item)}>Stake</div>
-            </div>)}
-        </div>
+      <div className="grid">
+        {nftAddresses.map((item, index) => 
+          <div className="nft_item" key={index}>
+            <video width="150"  autoPlay={true}>
+              <source src={COLLECTION1} type="video/mp4" />
+            </video>
+            <div className="btn" style={{cursor: "pointer"}} onClick={() => stakeNFT(item)}>Stake</div>
+          </div>)}
+      </div>
     </>
   );
 }
