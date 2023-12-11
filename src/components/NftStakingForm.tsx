@@ -143,7 +143,10 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
           amount: new BigNumber(1).multipliedBy(10 ** 9).toString(),
           bounce: true,
         });
-        console.log(res);
+        if (res?.id?.lt && res?.endStatus === "active") {
+          alert("Successfully staked NFT!");
+          document.location.reload();
+        }
     } catch (error) {
       console.log(error);
     }
