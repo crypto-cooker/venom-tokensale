@@ -130,6 +130,17 @@ a {
   margin: auto;
   max-width: 750px;
 }
+
+.nft_unstaking_card {
+  border-radius: 16px;
+  background-image: linear-gradient(154.15deg, rgba(32, 54, 255, 0.25) 25.78%, rgba(13, 223, 84, 0.25) 71.54%);
+  padding: 2px;
+  width: 100%;
+  margin: auto;
+  margin-top: 30px;
+  max-width: 750px;
+}
+
 .card__wrap {
   padding: 24px;
   background: #2A434B;
@@ -170,9 +181,8 @@ a {
   border: #0f926c 1px solid;
   box-shadow: none;
 }
-.card__amount .btn_unstake {
+.btn_unstake {
   background-color: #55f;
-  border: #0f926c 1px solid;
   box-shadow: none;
 }
 .item-info {

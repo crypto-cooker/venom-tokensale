@@ -153,18 +153,21 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
     if (!venomConnect || !address || !provider || !tokenWalletContract) return;    
   };
   return (
-    <>
-      <h1>Stake NFT to boost your APY</h1>
-      <div className="grid">
-        {nftAddresses.map((item, index) => 
-          <div className="nft_item" key={index}>
-            <video width="150"  autoPlay={true}>
-              <source src={COLLECTION1} type="video/mp4" />
-            </video>
-            <div className="btn" style={{cursor: "pointer"}} onClick={() => stakeNFT(item)}>Stake</div>
-          </div>)}
+    <div className="nft_staking_card">
+      <div className="card__wrap">
+        <h1>Stake NFT to boost your APY</h1>
+        <div className="grid">
+          {nftAddresses.length==0 && <h3>No NFTs</h3>}
+          {nftAddresses.map((item, index) => 
+            <div className="nft_item" key={index}>
+              <video width="150"  autoPlay={true}>
+                <source src={COLLECTION1} type="video/mp4" />
+              </video>
+              <div className="btn" style={{cursor: "pointer"}} onClick={() => stakeNFT(item)}>Stake</div>
+            </div>)}
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 

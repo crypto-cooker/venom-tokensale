@@ -1,15 +1,16 @@
-import { Address, ProviderRpcClient } from 'everscale-inpage-provider';
 import { useEffect, useState } from 'react';
 import { VenomConnect } from 'venom-connect';
 
 import BackImg from '../styles/img/decor.svg';
 import {BrowserView, MobileView} from 'react-device-detect';
 import Hamburger from 'hamburger-react'
+import { Link } from 'react-router-dom';
 import ConnectWallet from '../components/ConnectWallet'
 import NftStakingForm from '../components/NftStakingForm';
 import "../styles/navbar.css"
 import logo from "../styles/img/logo.png";
 import { initVenomConnect } from "../venom-connect/configure";
+import NftUnstakingForm from '../components/NftUnstakingForm';
 
 function NftStaking() {
   
@@ -85,10 +86,10 @@ function NftStaking() {
               <img src={logo} alt="Logo" />
             </a>
             <div className="menu-section">
-              <a className='nav-menu' href="/">HOME</a>
-              <a className='nav-menu' href="/">VPUMPY STAKING</a>
-              <a className='nav-menu' href='/nft_staking'>NFT STAKING</a>
-              <a className='nav-menu' href='/leaderboard'>LEADERBOARD</a>
+              <Link className='nav-menu' to="/">HOME</Link>
+              <Link className='nav-menu' to="/">VPUMPY STAKING</Link>
+              <Link className='nav-menu' to='/nft_staking'>NFT STAKING</Link>
+              <Link className='nav-menu' to='/leaderboard'>LEADERBOARD</Link>
               {!address &&
               <a className="logout" onClick={onConnect}>
                 CONNECT
@@ -118,16 +119,16 @@ function NftStaking() {
             >
               <ul>
                 <li>
-                  <a href="/home">HOME</a>
+                  <Link to="/home">HOME</Link>
                 </li>
                 <li>
-                  <a href="/">VPUMPY STAKING</a>
+                  <Link to="/">VPUMPY STAKING</Link>
                 </li>
                 <li>
-                  <a href="/nft_staking">NFT STAKING</a>
+                  <Link to="/nft_staking">NFT STAKING</Link>
                 </li>
                 <li>
-                  <a href="/leaderboard">LEADERBOARD</a>
+                  <Link to="/leaderboard">LEADERBOARD</Link>
                 </li>
                 <li>
                 {!address &&
@@ -143,19 +144,22 @@ function NftStaking() {
             </div>}
           </nav>
         </MobileView>
-      <div className="nft_staking_card">
-        <div className="card__wrap">
-          {address ? (
+        {address ? (  
+          <>
             <NftStakingForm
               address={address}
               venomConnect={venomConnect}
               provider={venomProvider}
             />
-          ) : (
-            <ConnectWallet venomConnect={venomConnect} />
-          )}
-        </div>
-      </div>
+            <NftUnstakingForm     
+              address={address}
+              venomConnect={venomConnect}
+              provider={venomProvider}
+            />
+          </>
+        ) : (
+          <ConnectWallet venomConnect={venomConnect} />
+        )}
     </div>
   );
 }

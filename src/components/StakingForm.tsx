@@ -32,6 +32,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
   const [isClaiming, setIsClaiming] = useState(false);
   const [isUnstaking, setIsUnstaking] = useState(false);
   const [unstakable, setUnstakable] = useState(true);
+  const [stakedNFTs, setStakedNFTs] = useState([]);
   const onChangeAmount = (e: string) => {
     if (e === "") setTokenAmount(undefined);
     setTokenAmount(Number(e));
@@ -70,6 +71,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
       .call({});
       setStakedAmount(parseFloat(value0.amount)/(10**9));
       setClaimedAmount(parseFloat(value0.claimedAmount)/(10**9));
+      setStakedNFTs(value0.nfts);
       //setRewardAmount()
       const { totalStakedAmount } = await stakingContract.methods
       .totalStakedAmount({})
@@ -181,7 +183,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
           </div>
           <div style={{textAlign:"center"}}>
             <b>APY</b><br />
-            <b>{"50%"}</b>
+            <b>{50 + stakedNFTs.length*50 + "%"}</b>
           </div>
         </div>
       </div>
@@ -221,7 +223,7 @@ function StakingForm({ venomConnect, address, provider }: Props) {
         <a className={(!tokenAmount || isStaking ) ? "btn disabled" : "btn"} onClick={stakeTokens}>
           Stake
         </a>
-        <a className={(!tokenAmount || tokenAmount>=stakedAmount) || isUnstaking || !unstakable ? "btn btn btn_unstake disabled" : "btn btn_unstake"} onClick={unstakeTokens}>
+        <a className={(!tokenAmount || tokenAmount>=stakedAmount) || isUnstaking || !unstakable ? "btn btn_unstake disabled" : "btn btn_unstake"} onClick={unstakeTokens}>
           Unstake
         </a>
       </div>
