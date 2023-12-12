@@ -82,12 +82,15 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
       const codeHash1 = await provider.getBocHash(saltedCode1);
       const codeHash2 = await provider.getBocHash(saltedCode2);
       console.log(codeHash1, "___________", codeHash2)
+      alert(codeHash1+"______"+codeHash2);
       if (!codeHash1 || !codeHash2) {
         return;
       }
       // Fetch all Indexes by hash
       const indexesAddresses1 = await getAddressesFromIndex(codeHash1);
       const indexesAddresses2 = await getAddressesFromIndex(codeHash2);
+      alert(indexesAddresses1?.length+"______"+indexesAddresses2?.length);
+
       if (indexesAddresses1 && indexesAddresses1.length >0) {
         console.log(indexesAddresses1, "indexesAddresses1")
         const nftAddrs1 = await getNftsByIndexes(provider, indexesAddresses1);
