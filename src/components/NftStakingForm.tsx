@@ -11,7 +11,7 @@ import tokenRootAbi from "../abi/TokenRoot.abi.json";
 import tokenWalletAbi from "../abi/TokenWallet.abi.json";
 import NFTAbi from "../abi/NFT.abi.json";
 import { getNftsByIndexes } from "../utils/nft";
-import { COLLECTION1, NFT_COLLECTION1, STAKING_ADDR, TOKEN_ROOT } from "../utils/constant";
+import { COLLECTION1, NFT_COLLECTION1,NFT_COLLECTION2, STAKING_ADDR, TOKEN_ROOT } from "../utils/constant";
 
 type Props = {
   venomConnect: VenomConnect | undefined;
@@ -23,7 +23,8 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
   const [stakingContract, setStakingContract] = useState<any>();
   const [tokenRootContract, setTokenRootContract] = useState<any>();
   const [tokenWalletContract, setTokenWalletContract] = useState<any>();
-  const [nftAddresses, setNftAddresses] = useState<Address[]>([]);
+  const [nftAddresses1, setNftAddresses1] = useState<Address[]>([]);
+  const [nftAddresses2, setNftAddresses2] = useState<Address[]>([]);
   
   useEffect(()=> {
     if(provider) {
@@ -38,7 +39,7 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
   }, [provider])
 
 
-  const saltCode = async (provider: ProviderRpcClient, ownerAddress: string) => {
+  const saltCode = async (provider: ProviderRpcClient, ownerAddress: string, collectionAddr:string) => {
     // Index StateInit you should take from github. It ALWAYS constant!
     const INDEX_BASE_64 = 'te6ccgECIAEAA4IAAgE0AwEBAcACAEPQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAgaK2zUfBAQkiu1TIOMDIMD/4wIgwP7jAvILHAYFHgOK7UTQ10nDAfhmifhpIds80wABn4ECANcYIPkBWPhC+RDyqN7TPwH4QyG58rQg+COBA+iogggbd0CgufK0+GPTHwHbPPI8EQ4HA3rtRNDXScMB+GYi0NMD+kAw+GmpOAD4RH9vcYIImJaAb3Jtb3Nwb3T4ZNwhxwDjAiHXDR/yvCHjAwHbPPI8GxsHAzogggujrde64wIgghAWX5bBuuMCIIIQR1ZU3LrjAhYSCARCMPhCbuMA+EbycyGT1NHQ3vpA0fhBiMjPjits1szOyds8Dh8LCQJqiCFus/LoZiBu8n/Q1PpA+kAwbBL4SfhKxwXy4GT4ACH4a/hs+kJvE9cL/5Mg+GvfMNs88gAKFwA8U2FsdCBkb2Vzbid0IGNvbnRhaW4gYW55IHZhbHVlAhjQIIs4rbNYxwWKiuIMDQEK103Q2zwNAELXTNCLL0pA1yb0BDHTCTGLL0oY1yYg10rCAZLXTZIwbeICFu1E0NdJwgGOgOMNDxoCSnDtRND0BXEhgED0Do6A34kg+Gz4a/hqgED0DvK91wv/+GJw+GMQEQECiREAQ4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAD/jD4RvLgTPhCbuMA0x/4RFhvdfhk0ds8I44mJdDTAfpAMDHIz4cgznHPC2FeIMjPkll+WwbOWcjOAcjOzc3NyXCOOvhEIG8TIW8S+ElVAm8RyM+EgMoAz4RAzgH6AvQAcc8LaV4gyPhEbxXPCx/OWcjOAcjOzc3NyfhEbxTi+wAaFRMBCOMA8gAUACjtRNDT/9M/MfhDWMjL/8s/zsntVAAi+ERwb3KAQG90+GT4S/hM+EoDNjD4RvLgTPhCbuMAIZPU0dDe+kDR2zww2zzyABoYFwA6+Ez4S/hK+EP4QsjL/8s/z4POWcjOAcjOzc3J7VQBMoj4SfhKxwXy6GXIz4UIzoBvz0DJgQCg+wAZACZNZXRob2QgZm9yIE5GVCBvbmx5AELtRNDT/9M/0wAx+kDU0dD6QNTR0PpA0fhs+Gv4avhj+GIACvhG8uBMAgr0pCD0oR4dABRzb2wgMC41OC4yAAAADCD4Ye0e2Q==';
     // Gettind a code from Index StateInit
@@ -56,7 +57,7 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
         structure: saltStruct,
         abiVersion: '2.1',
         data: {
-          collection: new Address(NFT_COLLECTION1),
+          collection: new Address(collectionAddr),
           owner: new Address(ownerAddress),
           type: btoa('nft'),
         },
@@ -75,22 +76,30 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
   const loadNFTs = async (provider: ProviderRpcClient, ownerAddress: string) => {
     try {
       // Take a salted code
-      const saltedCode = await saltCode(provider, ownerAddress);
+      const saltedCode1 = await saltCode(provider, ownerAddress, NFT_COLLECTION1);
+      const saltedCode2 = await saltCode(provider, ownerAddress, NFT_COLLECTION2);
       // Hash it
-      const codeHash = await provider.getBocHash(saltedCode);
-      if (!codeHash) {
+      const codeHash1 = await provider.getBocHash(saltedCode1);
+      const codeHash2 = await provider.getBocHash(saltedCode2);
+      console.log(codeHash1, "___________", codeHash2)
+      if (!codeHash1 || !codeHash2) {
         return;
       }
       // Fetch all Indexes by hash
-      const indexesAddresses = await getAddressesFromIndex(codeHash);
-      console.log(indexesAddresses)
-      if (!indexesAddresses || !indexesAddresses.length) {
-        return;
+      const indexesAddresses1 = await getAddressesFromIndex(codeHash1);
+      const indexesAddresses2 = await getAddressesFromIndex(codeHash2);
+      if (indexesAddresses1 && indexesAddresses1.length >0) {
+        console.log(indexesAddresses1, "indexesAddresses1")
+        const nftAddrs1 = await getNftsByIndexes(provider, indexesAddresses1);
+        setNftAddresses1(nftAddrs1)
       }
-      // Fetch all image URLs
-      const nftAddrs = await getNftsByIndexes(provider, indexesAddresses);
-      console.log(nftAddrs)
-      setNftAddresses(nftAddrs);
+      if (indexesAddresses2 && indexesAddresses2.length>0) {
+        console.log(indexesAddresses2, "indexesAddresses2")
+        const nftAddrs2 = await getNftsByIndexes(provider, indexesAddresses2);
+        setNftAddresses2(nftAddrs2)
+
+      }
+
     } catch (e) {
       console.error(e);
     }
@@ -160,8 +169,15 @@ function NftStakingForm({ venomConnect, address, provider }: Props) {
       <div className="card__wrap">
         <h1>Stake NFT to boost your APY</h1>
         <div className="grid">
-          {nftAddresses.length==0 && <h3>No NFTs</h3>}
-          {nftAddresses.map((item, index) => 
+          {(nftAddresses1.length+nftAddresses2.length)==0 && <h3>No NFTs</h3>}
+          {nftAddresses1.map((item, index) => 
+            <div className="nft_item" key={index}>
+              <video width="150"  autoPlay={true}>
+                <source src={COLLECTION1} type="video/mp4" />
+              </video>
+              <div className="btn" style={{cursor: "pointer"}} onClick={() => stakeNFT(item)}>Stake</div>
+            </div>)}
+            {nftAddresses2.map((item, index) => 
             <div className="nft_item" key={index}>
               <video width="150"  autoPlay={true}>
                 <source src={COLLECTION1} type="video/mp4" />
