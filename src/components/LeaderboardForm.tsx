@@ -39,13 +39,11 @@ function LeaderboardForm({ venomConnect, address, provider }: Props) {
       const { stakes } = await stakingContract.methods
       .stakes({})
       .call({});
-      const ranks = [];
-      for(var i=0; i<stakes.length; i++) {
-        const { value0 } = await getRewardAmount(stakes[i][0].toString());
-        ranks.push({address: stakes[i][0].toString(), amount: value0});
-      }
-
-      return ranks.sort((a, b)=> {return b.amount-a.amount});
+      //const ranks = [];
+      
+      console.log(stakes);
+      //return stakes;
+      return stakes.sort((a:any, b:any)=> {return b[1].amount-a[1].amount});
     } catch (error) {
       console.log(error, "GREAT")
       return [];
@@ -81,11 +79,11 @@ function LeaderboardForm({ venomConnect, address, provider }: Props) {
         <h1>LeaderBoard</h1>
         <div className="leaderboard_column">
           <div>Staker </div>
-          <div>Total points</div>
+          <div>Staked Amount</div>
         </div>
         {
           ranksInfo.map((item:any, index:number) => (
-            <LeaderboardItem key={index} index={index} address={item.address} amount={item.amount} />
+            <LeaderboardItem key={index} index={index} address={item[0].toString()} amount={item[1].amount} />
           ))
         }
       </div>
