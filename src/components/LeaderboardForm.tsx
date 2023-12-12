@@ -8,20 +8,19 @@ import BigNumber from "bignumber.js";
 // Importing of our contract ABI from smart-contract build action. Of cource we need ABI for contracts calls.
 import stakingAbi from "../abi/Staking.abi.json";
 import tokenRootAbi from "../abi/TokenRoot.abi.json";
-import NFTAbi from "../abi/NFT.abi.json";
-import { COLLECTION1, NFT_COLLECTION1, STAKING_ADDR, TOKEN_ROOT } from "../utils/constant";
-
+import { COLLECTION1, STAKING_ADDR, TOKEN_ROOT } from "../utils/constant";
+import LeaderboardItem from "./LeaderBoardItem";
 type Props = {
   venomConnect: VenomConnect | undefined;
   address: string | undefined;
   provider: ProviderRpcClient | undefined;
 };
 
-function NftUnstakingForm({ venomConnect, address, provider }: Props) {
+function LeaderboardForm({ venomConnect, address, provider }: Props) {
   const [stakingContract, setStakingContract] = useState<any>();
   const [tokenRootContract, setTokenRootContract] = useState<any>();
   const [tokenWalletContract, setTokenWalletContract] = useState<any>();
-  const [nftAddresses, setNftAddresses] = useState<Address[]>([]);
+  const [ranksInfo, setRankInfo] = useState<any>([]);
   
   useEffect(()=> {
     if(provider) {
@@ -35,64 +34,63 @@ function NftUnstakingForm({ venomConnect, address, provider }: Props) {
     }
   }, [provider])
   
-  const getStakingInfo = async () => {
+  const getRankInfo = async () => {
     try {
-      const { value0 } = await stakingContract.methods
-      .getStakedInfo({staker: address})
+      const { stakes } = await stakingContract.methods
+      .stakes({})
       .call({});
-      return value0;
+      const ranks = [];
+      for(var i=0; i<stakes.length; i++) {
+        const { value0 } = await getRewardAmount(stakes[i][0].toString());
+        ranks.push({address: stakes[i][0].toString(), amount: value0});
+      }
+
+      return ranks.sort((a, b)=> {return b.amount-a.amount});
     } catch (error) {
       console.log(error, "GREAT")
-      return undefined;
+      return [];
+    }
+  }
+
+  const getRewardAmount = async (staker:any) => {
+    try {
+      const result = await stakingContract.methods
+      .getRewardAmount({staker})
+      .call({});
+      return result;
+    } catch (error) {
+      console.log(error, "GREAT")
+      return [];
     }
   }
 
   useEffect(()=> {
     if(stakingContract && address) {
       (async() => {
-        const data = await getStakingInfo();
+        const data = await getRankInfo();
         if(data) {
-          setNftAddresses(data.nfts);
+          setRankInfo(data);
         }
       })();
     }
-  }, [stakingContract, address, tokenWalletContract])
-
-  const unStakeNFT = async (nftAddr:Address) => {
-    if (!venomConnect || !address || !stakingContract) return;
-    try {
-      const res = await stakingContract.methods
-        .unstakeNFT({nftAddr})
-        .send({
-          from: new Address(address),
-          amount: new BigNumber(1).multipliedBy(10 ** 9).toString(),
-          bounce: true,
-        });
-        if (res?.id?.lt && res?.endStatus === "active") {
-          alert("Successfully unstaked NFT!");
-          document.location.reload();
-        }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  }, [stakingContract, address])
+  
   return (
     <div className="nft_unstaking_card">
       <div className="card__wrap">
-        <h1>Unstake NFTs</h1>
-        <div className="grid">
-          {nftAddresses.length==0 && <h3>No NFTs</h3>}
-          {nftAddresses.map((item, index) => 
-            <div className="nft_item" key={index}>
-              <video width="150"  autoPlay={true}>
-                <source src={COLLECTION1} type="video/mp4" />
-              </video>
-              <div className="btn btn_unstake" style={{cursor: "pointer"}} onClick={() => unStakeNFT(item)}>Unstake</div>
-            </div>)}
+        <h1>LeaderBoard</h1>
+        <div className="leaderboard_column">
+          <div>Staker </div>
+          <div>Total points</div>
         </div>
+        {
+          ranksInfo.map((item:any, index:number) => (
+            <LeaderboardItem key={index} index={index} address={item.address} amount={item.amount} />
+          ))
+        }
       </div>
     </div>
   );
 }
 
-export default NftUnstakingForm;
+export default LeaderboardForm;

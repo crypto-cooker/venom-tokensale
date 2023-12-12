@@ -6,13 +6,12 @@ import {BrowserView, MobileView} from 'react-device-detect';
 import Hamburger from 'hamburger-react'
 import { Link } from 'react-router-dom';
 import ConnectWallet from '../components/ConnectWallet'
-import NftStakingForm from '../components/NftStakingForm';
+import LeaderboardForm from '../components/LeaderboardForm';
 import "../styles/navbar.css"
 import logo from "../styles/img/logo.png";
 import { initVenomConnect } from "../venom-connect/configure";
-import NftUnstakingForm from '../components/NftUnstakingForm';
 
-function NftStaking() {
+function Leardboard() {
   
   const [venomConnect, setVenomConnect] = useState<VenomConnect | undefined>();
   const init = async () => {
@@ -146,12 +145,7 @@ function NftStaking() {
         </MobileView>
         {address ? (  
           <>
-            <NftStakingForm
-              address={address}
-              venomConnect={venomConnect}
-              provider={venomProvider}
-            />
-            <NftUnstakingForm     
+            <LeaderboardForm
               address={address}
               venomConnect={venomConnect}
               provider={venomProvider}
@@ -164,4 +158,4 @@ function NftStaking() {
   );
 }
   
-export default NftStaking;
+export default Leardboard;

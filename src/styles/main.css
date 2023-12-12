@@ -413,3 +413,28 @@ header .logout:hover {
 .nft_item video {
   border-radius: 10px;
 }
+
+.leaderboard_item {
+  display: flex;
+  width: 100%;
+  margin-top: 4px;
+  justify-content: space-between;
+  padding: 10px;
+  border: 2px solid #357;
+  border-radius: 10px;
+  font-size: 18px;
+}
+.leaderboard_rank_num {
+  font-weight: 900;
+  font-size: 20px;
+  color: #55f;
+}
+
+.leaderboard_column {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 10px;
+  font-size: 20px;
+  font-weight: bold;
+}
