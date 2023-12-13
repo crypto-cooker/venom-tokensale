@@ -162,6 +162,16 @@ function Main() {
           )}
         </div>
       </div>
+      <div className='private_sale_text'>
+        <h1>PARTICIPATE IN $VENOMPUMPY</h1>
+        <h1>TOKEN PRIVATE SALE</h1>
+        <h2>
+          Participate in the Private Sales will enable you to UNLOCK ALL Airdrop rewards you have accumulated in ALL our Giveaway campaign at launch in mainnet.
+        </h2>
+        <h2>
+          Those who do not Participate in private sales are going to claim at a later date.
+        </h2>
+      </div>
     </div>
   );
 }
