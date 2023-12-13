@@ -90,6 +90,8 @@ function NftStaking() {
               <Link className='nav-menu' to="/">VPUMPY STAKING</Link>
               <Link className='nav-menu' to='/nft_staking'>NFT STAKING</Link>
               <Link className='nav-menu' to='/leaderboard'>LEADERBOARD</Link>
+              <a className='nav-menu' href='https://privatesale.venompumpy.com'>Join Private Sale</a>
+                
               {!address &&
               <a className="logout" onClick={onConnect}>
                 CONNECT
@@ -129,6 +131,9 @@ function NftStaking() {
                 </li>
                 <li>
                   <Link to="/leaderboard">LEADERBOARD</Link>
+                </li>
+                <li>
+                  <a className='nav-menu' href='https://privatesale.venompumpy.com'>Join Private Sale</a>
                 </li>
                 <li>
                 {!address &&
